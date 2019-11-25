@@ -1,4 +1,4 @@
-defmodule Welcome2.Game do
+defmodule Welcome2Game.Game do
   defstruct(
     deck0: [],
     deck1: [],
@@ -13,7 +13,7 @@ defmodule Welcome2.Game do
     len = deck |> length
     size = div(len, 3)
 
-    %Welcome2.Game{
+    %Welcome2Game.Game{
       deck0: deck |> Enum.slice(0 * size, size),
       deck1: deck |> Enum.slice(1 * size, size),
       deck2: deck |> Enum.slice(2 * size, size),
@@ -33,7 +33,7 @@ defmodule Welcome2.Game do
       shown2: shown2
     } = state
 
-    %Welcome2.Game{
+    %Welcome2Game.Game{
       deck0: remainder_deck0,
       deck1: remainder_deck1,
       deck2: remainder_deck2,
@@ -51,7 +51,7 @@ defmodule Welcome2.Game do
     len = deck |> length
     size = div(len, 3)
 
-    %Welcome2.Game{
+    %Welcome2Game.Game{
       deck0: deck |> Enum.slice(0 * size, size),
       deck1: deck |> Enum.slice(1 * size, size),
       deck2: deck |> Enum.slice(2 * size, size),
