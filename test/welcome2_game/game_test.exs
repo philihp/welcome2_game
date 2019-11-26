@@ -1,12 +1,12 @@
-defmodule Welcome2.GameTest do
-  alias Welcome2.Game
+defmodule Welcome2Game.GameTest do
+  alias Welcome2Game.Game
   use ExUnit.Case
 
   test "new_game returns a game" do
     game = Game.new_game()
-    assert length(game.deck0) === 2
-    assert length(game.deck1) === 2
-    assert length(game.deck2) === 2
+    assert length(game.deck0) === 27
+    assert length(game.deck1) === 27
+    assert length(game.deck2) === 27
     assert game.shown0 === []
     assert game.shown1 === []
     assert game.shown2 === []
@@ -50,9 +50,9 @@ defmodule Welcome2.GameTest do
 
   test "shuffle regenerates the game" do
     game = Game.new_game() |> Game.draw() |> Game.shuffle()
-    assert length(game.deck0) === 2
-    assert length(game.deck1) === 2
-    assert length(game.deck2) === 2
+    assert length(game.deck0) === 27
+    assert length(game.deck1) === 27
+    assert length(game.deck2) === 27
     assert game.shown0 === []
     assert game.shown1 === []
     assert game.shown2 === []
