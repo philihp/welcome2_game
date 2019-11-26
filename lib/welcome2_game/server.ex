@@ -16,11 +16,7 @@ defmodule Welcome2Game.Server do
   end
 
   def handle_call(:shuffle, _from, game) do
-    # IO.inspect("GAME===")
-    # IO.inspect(game)
-    # IO.inspect("RETURNING===")
     game = Game.shuffle(game)
-    # IO.inspect(game)
     {:reply, game, game}
   end
 end
