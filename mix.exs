@@ -13,14 +13,19 @@ defmodule Welcome2Game.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      mod: {
+        Welcome2Game.Application,
+        []
+      },
+      extra_applications: [
+        :logger
+      ]
     ]
   end
 
   defp deps do
     [
-      {:welcome2_constants, path: '../welcome2_constants'},
-      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
+      {:welcome2_constants, path: '../welcome2_constants', in_umbrella: true}
     ]
   end
 end
