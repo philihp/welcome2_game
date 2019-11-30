@@ -10,13 +10,15 @@ defmodule Welcome2Game.Server do
     {:ok, Game.new_game()}
   end
 
-  def handle_call(:draw, _from, game) do
-    game = Game.draw(game)
-    {:reply, game, game}
+  def handle_call(:draw, _from, src_state) do
+    dst_state = Game.draw(src_state)
+    view = Game.view(dst_state)
+    {:reply, view, dst_state}
   end
 
-  def handle_call(:shuffle, _from, game) do
-    game = Game.shuffle(game)
-    {:reply, game, game}
+  def handle_call(:shuffle, _from, src_state) do
+    dst_state = Game.shuffle(src_state)
+    view = Game.view(dst_state)
+    {:reply, view, dst_state}
   end
 end

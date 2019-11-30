@@ -60,4 +60,15 @@ defmodule Welcome2Game.Game do
       shown2: []
     }
   end
+
+  def view(state) do
+    %{
+      deck0: state.deck0 |> length,
+      deck1: state.deck1 |> length,
+      deck2: state.deck2 |> length,
+      shown0: state.shown0,
+      shown1: state.shown1,
+      shown2: state.shown2
+    }
+  end
 end
