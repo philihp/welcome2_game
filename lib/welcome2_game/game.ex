@@ -1,19 +1,10 @@
 defmodule Welcome2Game.Game do
-  defstruct(
-    deck0: [],
-    deck1: [],
-    deck2: [],
-    shown0: [],
-    shown1: [],
-    shown2: []
-  )
-
   def new_game do
     deck = Welcome2Constants.deck() |> Enum.shuffle()
-    len = deck |> length
-    size = div(len, 3)
+    size = deck |> length |> div(3)
 
-    %Welcome2Game.Game{
+    %Welcome2Game.State{
+      state: :playing,
       deck0: deck |> Enum.slice(0 * size, size),
       deck1: deck |> Enum.slice(1 * size, size),
       deck2: deck |> Enum.slice(2 * size, size),
@@ -33,13 +24,14 @@ defmodule Welcome2Game.Game do
       shown2: shown2
     } = state
 
-    %Welcome2Game.Game{
-      deck0: remainder_deck0,
-      deck1: remainder_deck1,
-      deck2: remainder_deck2,
-      shown0: [drawn_card0 | shown0],
-      shown1: [drawn_card1 | shown1],
-      shown2: [drawn_card2 | shown2]
+    %Welcome2Game.State{
+      state
+      | deck0: remainder_deck0,
+        deck1: remainder_deck1,
+        deck2: remainder_deck2,
+        shown0: [drawn_card0 | shown0],
+        shown1: [drawn_card1 | shown1],
+        shown2: [drawn_card2 | shown2]
     }
   end
 
@@ -51,13 +43,14 @@ defmodule Welcome2Game.Game do
     len = deck |> length
     size = div(len, 3)
 
-    %Welcome2Game.Game{
-      deck0: deck |> Enum.slice(0 * size, size),
-      deck1: deck |> Enum.slice(1 * size, size),
-      deck2: deck |> Enum.slice(2 * size, size),
-      shown0: [],
-      shown1: [],
-      shown2: []
+    %Welcome2Game.State{
+      state
+      | deck0: deck |> Enum.slice(0 * size, size),
+        deck1: deck |> Enum.slice(1 * size, size),
+        deck2: deck |> Enum.slice(2 * size, size),
+        shown0: [],
+        shown1: [],
+        shown2: []
     }
   end
 
@@ -68,7 +61,9 @@ defmodule Welcome2Game.Game do
       deck2: state.deck2 |> length,
       shown0: state.shown0,
       shown1: state.shown1,
-      shown2: state.shown2
+      shown2: state.shown2,
+      state: state.state,
+      moves: [:shuffle, :draw]
     }
   end
 end

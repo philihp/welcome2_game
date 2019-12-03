@@ -1,14 +1,10 @@
 defmodule Welcome2Game do
   def new_game do
-    {:ok, state} = Supervisor.start_child(Welcome2Game.Supervisor, [])
-    state
+    {:ok, pid} = Supervisor.start_child(Welcome2Game.Supervisor, [])
+    pid
   end
 
-  def draw(state) do
-    GenServer.call(state, :draw)
-  end
-
-  def shuffle(state) do
-    GenServer.call(state, :shuffle)
+  def make_move(pid, move) do
+    GenServer.call(pid, move)
   end
 end

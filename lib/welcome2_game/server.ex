@@ -12,13 +12,15 @@ defmodule Welcome2Game.Server do
 
   def handle_call(:draw, _from, src_state) do
     dst_state = Game.draw(src_state)
-    view = Game.view(dst_state)
-    {:reply, view, dst_state}
+    {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call(:shuffle, _from, src_state) do
     dst_state = Game.shuffle(src_state)
-    view = Game.view(dst_state)
-    {:reply, view, dst_state}
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call(:identity, _from, src_state) do
+    {:reply, src_state |> Game.view(), src_state}
   end
 end
