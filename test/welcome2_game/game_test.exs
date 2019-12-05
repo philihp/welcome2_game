@@ -4,12 +4,12 @@ defmodule Welcome2Game.GameTest do
 
   test "new_game returns a game" do
     game = Game.new_game()
-    assert length(game.deck0) === 27
-    assert length(game.deck1) === 27
-    assert length(game.deck2) === 27
-    assert game.shown0 === []
-    assert game.shown1 === []
-    assert game.shown2 === []
+    assert length(game.deck0) === 26
+    assert length(game.deck1) === 26
+    assert length(game.deck2) === 26
+    assert length(game.shown0) === 1
+    assert length(game.shown1) === 1
+    assert length(game.shown2) === 1
   end
 
   test "draw pulls from deck0" do
@@ -50,11 +50,11 @@ defmodule Welcome2Game.GameTest do
 
   test "shuffle regenerates the game" do
     game = Game.new_game() |> Game.draw() |> Game.shuffle()
-    assert length(game.deck0) === 27
-    assert length(game.deck1) === 27
-    assert length(game.deck2) === 27
-    assert game.shown0 === []
-    assert game.shown1 === []
-    assert game.shown2 === []
+    assert length(game.deck0) === 26
+    assert length(game.deck1) === 26
+    assert length(game.deck2) === 26
+    assert length(game.shown0) === 1
+    assert length(game.shown1) === 1
+    assert length(game.shown2) === 1
   end
 end

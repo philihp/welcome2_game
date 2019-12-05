@@ -8,6 +8,7 @@ defmodule Welcome2Game.State do
     deck2: [],
     shown0: [],
     shown1: [],
-    shown2: []
+    shown2: [],
+    player0: %{}
   )
 end

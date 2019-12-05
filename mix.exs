@@ -25,6 +25,7 @@ defmodule Welcome2Game.MixProject do
 
   defp deps do
     [
+      {:poison, "~> 3.1"},
       {:welcome2_constants, path: '../welcome2_constants', in_umbrella: true}
     ]
   end

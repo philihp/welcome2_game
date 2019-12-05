@@ -1,6 +1,10 @@
 defmodule Welcome2Game.Game do
   def new_game do
-    deck = Welcome2Constants.deck() |> Enum.shuffle()
+    deck =
+      Welcome2Constants.deck()
+      |> Poison.decode!(as: [%Card{}])
+      |> Enum.shuffle()
+
     size = deck |> length |> div(3)
 
     %Welcome2Game.State{
@@ -10,8 +14,12 @@ defmodule Welcome2Game.Game do
       deck2: deck |> Enum.slice(2 * size, size),
       shown0: [],
       shown1: [],
-      shown2: []
+      shown2: [],
+      player0: [
+        %Tableau{}
+      ]
     }
+    |> draw
   end
 
   def draw(state) do
@@ -52,18 +60,30 @@ defmodule Welcome2Game.Game do
         shown1: [],
         shown2: []
     }
+    |> draw
   end
 
   def view(state) do
     %{
-      deck0: state.deck0 |> length,
-      deck1: state.deck1 |> length,
-      deck2: state.deck2 |> length,
-      shown0: state.shown0,
-      shown1: state.shown1,
-      shown2: state.shown2,
+      deck0_suit: state.deck0 |> top |> Map.get(:suit),
+      deck1_suit: state.deck1 |> top |> Map.get(:suit),
+      deck2_suit: state.deck2 |> top |> Map.get(:suit),
+      deck0_length: state.deck0 |> length,
+      deck1_length: state.deck1 |> length,
+      deck2_length: state.deck2 |> length,
+      shown0: state.shown0 |> top,
+      shown1: state.shown1 |> top,
+      shown2: state.shown2 |> top,
       state: state.state,
-      moves: [:shuffle, :draw]
+      moves: MoveFinder.moves(state)
     }
+  end
+
+  defp top([]) do
+    nil
+  end
+
+  defp top(list) do
+    list |> hd
   end
 end
