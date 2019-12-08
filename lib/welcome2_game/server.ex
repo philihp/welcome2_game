@@ -11,12 +11,37 @@ defmodule Welcome2Game.Server do
   end
 
   def handle_call(:draw, _from, src_state) do
-    dst_state = Game.draw(src_state)
+    dst_state = src_state |> Game.draw()
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call(:shuffle, _from, src_state) do
-    dst_state = Game.shuffle(src_state)
+    dst_state = src_state |> Game.shuffle()
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call({:permit, index}, _from, src_state) do
+    dst_state = src_state |> Game.permit(index)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call({:build, row, index}, _from, src_state) do
+    dst_state = src_state |> Game.build(row, index)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call({:pool, row, index}, _from, src_state) do
+    dst_state = src_state |> Game.pool(row, index)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call({:bis, row, index, offset}, _from, src_state) do
+    dst_state = src_state |> Game.bis(row, index, offset)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call(:commit, _from, src_state) do
+    dst_state = src_state |> Game.commit()
     {:reply, dst_state |> Game.view(), dst_state}
   end
 

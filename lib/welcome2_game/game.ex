@@ -1,4 +1,6 @@
 defmodule Welcome2Game.Game do
+  alias Welcome2Game.{Card, State, Tableau, MoveFinder}
+
   def new_game do
     deck =
       Welcome2Constants.deck()
@@ -7,7 +9,7 @@ defmodule Welcome2Game.Game do
 
     size = deck |> length |> div(3)
 
-    %Welcome2Game.State{
+    %State{
       state: :playing,
       deck0: deck |> Enum.slice(0 * size, size),
       deck1: deck |> Enum.slice(1 * size, size),
@@ -15,9 +17,7 @@ defmodule Welcome2Game.Game do
       shown0: [],
       shown1: [],
       shown2: [],
-      player0: [
-        %Tableau{}
-      ]
+      player: %Tableau{}
     }
     |> draw
   end
@@ -32,7 +32,7 @@ defmodule Welcome2Game.Game do
       shown2: shown2
     } = state
 
-    %Welcome2Game.State{
+    %State{
       state
       | deck0: remainder_deck0,
         deck1: remainder_deck1,
@@ -51,7 +51,7 @@ defmodule Welcome2Game.Game do
     len = deck |> length
     size = div(len, 3)
 
-    %Welcome2Game.State{
+    %State{
       state
       | deck0: deck |> Enum.slice(0 * size, size),
         deck1: deck |> Enum.slice(1 * size, size),
@@ -61,6 +61,61 @@ defmodule Welcome2Game.Game do
         shown2: []
     }
     |> draw
+  end
+
+  def permit(state, number) do
+    %State{
+      state
+      | permit: state |> Map.get(:"shown#{number}") |> hd,
+        current_move: [{:permit, number} | state.current_move]
+    }
+  end
+
+  def build(state, row, index) do
+    %State{
+      state
+      | player: struct(state.player, %{:"row#{row}#{index}number" => state.permit.face}),
+        built: {row, index},
+        current_move: [{:build, row, index} | state.current_move]
+    }
+  end
+
+  def bis(state, row, index, offset) do
+    effect = {:bis, row, index, offset}
+
+    %State{
+      state
+      | player:
+          struct(state.player, %{
+            :"row#{row}#{index}bis" => true,
+            :"row#{row}#{index}number" =>
+              Map.get(state.player, :"row#{row}#{index + offset}number")
+          }),
+        effect: effect,
+        current_move: [effect | state.current_move]
+    }
+  end
+
+  def pool(state, row, index) do
+    effect = {:pool, row, index}
+
+    %State{
+      state
+      | player: struct(state.player, %{:"row#{row}#{index}pool" => true}),
+        effect: effect,
+        current_move: [effect | state.current_move]
+    }
+  end
+
+  def commit(state) do
+    %State{
+      state
+      | permit: nil,
+        built: nil,
+        effect: nil,
+        moves: state.current_move ++ [:commit] ++ state.moves,
+        current_move: []
+    }
   end
 
   def view(state) do
@@ -75,6 +130,9 @@ defmodule Welcome2Game.Game do
       shown1: state.shown1 |> top,
       shown2: state.shown2 |> top,
       state: state.state,
+      permit: state.permit,
+      built: state.built,
+      effect: state.effect,
       moves: MoveFinder.moves(state)
     }
   end
