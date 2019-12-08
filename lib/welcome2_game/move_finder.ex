@@ -37,18 +37,6 @@ defmodule Welcome2Game.MoveFinder do
     c: 12
   ]
 
-  @poolable [
-    a: 3,
-    a: 7,
-    a: 8,
-    b: 1,
-    b: 4,
-    b: 8,
-    c: 2,
-    c: 7,
-    c: 11
-  ]
-
   def moves(%{state: :setup}) do
     [:start]
   end
