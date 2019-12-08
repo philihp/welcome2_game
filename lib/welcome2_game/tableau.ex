@@ -138,6 +138,12 @@ defmodule Welcome2Game.Tableau do
     rowc11pool: false,
     rowc12number: 0,
     rowc12bis: false,
-    rowc12plan: false
+    rowc12plan: false,
+    estate1: 1,
+    estate2: 2,
+    estate3: 3,
+    estate4: 4,
+    estate5: 5,
+    estate6: 6
   )
 end

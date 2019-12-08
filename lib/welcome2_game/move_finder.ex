@@ -1,6 +1,8 @@
 defmodule Welcome2Game.MoveFinder do
   alias Welcome2Game.Card
 
+  @per_row [a: 10, b: 11, c: 12]
+
   @buildable [
     a: 1,
     a: 2,
@@ -37,6 +39,20 @@ defmodule Welcome2Game.MoveFinder do
     c: 12
   ]
 
+  @estates %{
+    1 => %{1 => 3},
+    2 => %{2 => 3, 3 => 5},
+    3 => %{3 => 4, 4 => 5, 5 => 7},
+    4 => %{4 => 5, 5 => 6, 6 => 7, 7 => 9},
+    5 => %{5 => 6, 6 => 7, 7 => 8, 8 => 10},
+    6 => %{6 => 7, 7 => 8, 8 => 19, 10 => 12}
+  }
+
+  # TODO gross refactor
+  def next_estate(current, size) do
+    @estates[size][current]
+  end
+
   def moves(%{state: :setup}) do
     [:start]
   end
@@ -45,8 +61,8 @@ defmodule Welcome2Game.MoveFinder do
     [{:permit, 0}, {:permit, 1}, {:permit, 2}]
   end
 
-  def moves(%{state: :playing, permit: %Card{}, built: nil, player: player}) do
-    for {row, index} <- @buildable, valid_build?(player, row, index) do
+  def moves(%{state: :playing, permit: %Card{face: number}, built: nil, player: player}) do
+    for {row, index} <- @buildable, valid_build?(player, row, index, number) do
       {:build, row, index}
     end
   end
@@ -83,6 +99,20 @@ defmodule Welcome2Game.MoveFinder do
       end
   end
 
+  def moves(%{
+        state: :playing,
+        permit: %Card{suit: "real-estate-agent"},
+        built: {_, _},
+        effect: nil,
+        player: player
+      }) do
+    [:commit] ++
+      for {size, steps} <- @estates,
+          valid_agent?(player, size, steps) do
+        {:agent, size}
+      end
+  end
+
   def moves(%{state: :playing, permit: %Card{}, built: {_, _}}) do
     IO.puts("unknown permit")
 
@@ -94,8 +124,23 @@ defmodule Welcome2Game.MoveFinder do
     []
   end
 
-  def valid_build?(_player, _row, index) do
-    index < 4
+  def valid_build?(player, row, index, number) do
+    unoccupied = fn x -> x != 0 end
+    is_lower = fn x -> x < number end
+    is_higher = fn x -> x > number end
+    house_number = fn i -> Map.get(player, :"row#{row}#{i}number", 0) end
+
+    Enum.all?([
+      house_number.(index) === 0,
+      1..index
+      |> Enum.map(house_number)
+      |> Enum.filter(unoccupied)
+      |> Enum.all?(is_lower),
+      index..@per_row[row]
+      |> Enum.map(house_number)
+      |> Enum.filter(unoccupied)
+      |> Enum.all?(is_higher)
+    ])
   end
 
   def valid_pool?(player, row, index) do
@@ -119,6 +164,10 @@ defmodule Welcome2Game.MoveFinder do
       newbuild != 0 -> false
       true -> true
     end
+  end
+
+  def valid_agent?(player, size, steps) do
+    Map.has_key?(steps, Map.get(player, :"estate#{size}"))
   end
 
   # [:poola3, :poola7, :poola8, :poolb1, :poolb4, :poolb8, :poolc2, :poolc7, :pool11]

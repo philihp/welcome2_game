@@ -107,6 +107,19 @@ defmodule Welcome2Game.Game do
     }
   end
 
+  def agent(state, size) do
+    effect = {:agent, size}
+    old_value = state.player |> Map.get(:"estate#{size}")
+    new_value = old_value |> MoveFinder.next_estate(size)
+
+    %State{
+      state
+      | player: struct(state.player, %{:"estate#{size}" => new_value}),
+        effect: effect,
+        current_move: [effect | state.current_move]
+    }
+  end
+
   def commit(state) do
     %State{
       state
@@ -116,6 +129,7 @@ defmodule Welcome2Game.Game do
         moves: state.current_move ++ [:commit] ++ state.moves,
         current_move: []
     }
+    |> draw
   end
 
   def view(state) do
