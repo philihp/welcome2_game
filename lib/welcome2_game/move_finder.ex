@@ -41,16 +41,26 @@ defmodule Welcome2Game.MoveFinder do
 
   @estates %{
     1 => %{1 => 3},
-    2 => %{2 => 3, 3 => 5},
-    3 => %{3 => 4, 4 => 5, 5 => 7},
-    4 => %{4 => 5, 5 => 6, 6 => 7, 7 => 9},
+    2 => %{2 => 3, 3 => 4},
+    3 => %{3 => 4, 4 => 5, 5 => 6},
+    4 => %{4 => 5, 5 => 6, 6 => 7, 7 => 8},
     5 => %{5 => 6, 6 => 7, 7 => 8, 8 => 10},
     6 => %{6 => 7, 7 => 8, 8 => 19, 10 => 12}
   }
 
+  @landscaper %{
+    :a => %{0 => 2, 2 => 4, 4 => 10},
+    :b => %{0 => 2, 2 => 4, 4 => 6, 6 => 14},
+    :c => %{0 => 2, 2 => 4, 4 => 6, 6 => 8, 8 => 18}
+  }
+
   # TODO gross refactor
-  def next_estate(current, size) do
+  def next_estate(size, current) do
     @estates[size][current]
+  end
+
+  def next_park(row, current) do
+    @estates[row][current]
   end
 
   def moves(%{state: :setup}) do
@@ -113,6 +123,23 @@ defmodule Welcome2Game.MoveFinder do
       end
   end
 
+  def moves(%{
+        state: :playing,
+        permit: %Card{suit: "landscaper"},
+        built: {row, _},
+        effect: nil,
+        player: player
+      }) do
+    [:commit] ++
+      cond do
+        valid_park?(player, row) ->
+          [{:park, row}]
+
+        true ->
+          []
+      end
+  end
+
   def moves(%{state: :playing, permit: %Card{}, built: {_, _}}) do
     IO.puts("unknown permit")
 
@@ -168,6 +195,10 @@ defmodule Welcome2Game.MoveFinder do
 
   def valid_agent?(player, size, steps) do
     Map.has_key?(steps, Map.get(player, :"estate#{size}"))
+  end
+
+  def valid_park?(player, row) do
+    Map.has_key?(@landscaper[row], Map.get(player, :"park#{row}", :invalid))
   end
 
   # [:poola3, :poola7, :poola8, :poolb1, :poolb4, :poolb8, :poolc2, :poolc7, :pool11]

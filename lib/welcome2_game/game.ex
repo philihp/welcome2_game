@@ -110,11 +110,24 @@ defmodule Welcome2Game.Game do
   def agent(state, size) do
     effect = {:agent, size}
     old_value = state.player |> Map.get(:"estate#{size}")
-    new_value = old_value |> MoveFinder.next_estate(size)
+    new_value = size |> MoveFinder.next_estate(old_value)
 
     %State{
       state
       | player: struct(state.player, %{:"estate#{size}" => new_value}),
+        effect: effect,
+        current_move: [effect | state.current_move]
+    }
+  end
+
+  def park(state, row) do
+    effect = {:park, row}
+    old_value = state.player |> Map.get(:"park#{row}")
+    new_value = row |> MoveFinder.next_park(old_value)
+
+    %State{
+      state
+      | player: struct(state.player, %{:"park#{row}" => new_value}),
         effect: effect,
         current_move: [effect | state.current_move]
     }

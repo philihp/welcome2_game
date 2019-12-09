@@ -144,6 +144,9 @@ defmodule Welcome2Game.Tableau do
     estate3: 3,
     estate4: 4,
     estate5: 5,
-    estate6: 6
+    estate6: 6,
+    parka: 0,
+    parkb: 0,
+    parkc: 0
   )
 end
