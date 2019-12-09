@@ -39,6 +39,39 @@ defmodule Welcome2Game.MoveFinder do
     c: 12
   ]
 
+  @fences [
+    a: 1,
+    a: 2,
+    a: 3,
+    a: 4,
+    a: 5,
+    a: 6,
+    a: 7,
+    a: 8,
+    a: 9,
+    b: 1,
+    b: 2,
+    b: 3,
+    b: 4,
+    b: 5,
+    b: 6,
+    b: 7,
+    b: 8,
+    b: 9,
+    b: 10,
+    c: 1,
+    c: 2,
+    c: 3,
+    c: 4,
+    c: 5,
+    c: 6,
+    c: 7,
+    c: 8,
+    c: 9,
+    c: 10,
+    c: 11
+  ]
+
   @estates %{
     1 => %{1 => 3},
     2 => %{2 => 3, 3 => 4},
@@ -140,6 +173,20 @@ defmodule Welcome2Game.MoveFinder do
       end
   end
 
+  def moves(%{
+        state: :playing,
+        permit: %Card{suit: "surveyor"},
+        built: {_, _},
+        effect: nil,
+        player: player
+      }) do
+    [:commit] ++
+      for {row, index} <- @fences,
+          valid_fence?(player, row, index) do
+        {:fence, row, index}
+      end
+  end
+
   def moves(%{state: :playing, permit: %Card{}, built: {_, _}}) do
     IO.puts("unknown permit")
 
@@ -178,17 +225,18 @@ defmodule Welcome2Game.MoveFinder do
     existing = Map.get(player, :"row#{row}#{index + offset}number", :invalid)
     newbuild = Map.get(player, :"row#{row}#{index}number", :invalid)
 
-    # TODO: make sure there's no fence between the two
-
     cond do
       # existing offset build is not a real index
-      existing == :invalid -> false
+      existing === :invalid -> false
       # existing build has not been built
-      existing == 0 -> false
+      existing === 0 -> false
       # new build is not a real index
-      newbuild == :invalid -> false
+      newbuild === :invalid -> false
       # new build has already been built
-      newbuild != 0 -> false
+      newbuild !== 0 -> false
+      # fence exists between index and offset
+      Map.get(player, :"fence#{row}#{min(index + offset, index)}", false) -> false
+      # its cool
       true -> true
     end
   end
@@ -199,6 +247,15 @@ defmodule Welcome2Game.MoveFinder do
 
   def valid_park?(player, row) do
     Map.has_key?(@landscaper[row], Map.get(player, :"park#{row}", :invalid))
+  end
+
+  def valid_fence?(player, row, index) do
+    fence_slot = Map.get(player, :"fence#{row}#{index}", :invalid)
+    left_number = Map.get(player, :"row#{row}#{index}number")
+    right_number = Map.get(player, :"row#{row}#{index + 1}number")
+
+    fence_slot === false and
+      (left_number === 0 or right_number === 0 or left_number !== right_number)
   end
 
   # [:poola3, :poola7, :poola8, :poolb1, :poolb4, :poolb8, :poolc2, :poolc7, :pool11]

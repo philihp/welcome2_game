@@ -133,6 +133,17 @@ defmodule Welcome2Game.Game do
     }
   end
 
+  def fence(state, row, index) do
+    effect = {:fence, row, index}
+
+    %State{
+      state
+      | player: struct(state.player, %{:"fence#{row}#{index}" => true}),
+        effect: effect,
+        current_move: [effect | state.current_move]
+    }
+  end
+
   def commit(state) do
     %State{
       state
