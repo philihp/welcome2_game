@@ -158,6 +158,7 @@ defmodule Welcome2Game.Game do
 
   def view(state) do
     %{
+      player: state.player |> Map.from_struct(),
       deck0_suit: state.deck0 |> top |> Map.get(:suit),
       deck1_suit: state.deck1 |> top |> Map.get(:suit),
       deck2_suit: state.deck2 |> top |> Map.get(:suit),

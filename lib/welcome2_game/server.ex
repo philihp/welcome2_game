@@ -11,41 +11,56 @@ defmodule Welcome2Game.Server do
   end
 
   def handle_call(:draw, _from, src_state) do
-    dst_state = src_state |> Game.draw()
+    dst_state = Game.draw(src_state)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call(:shuffle, _from, src_state) do
-    dst_state = src_state |> Game.shuffle()
+    dst_state = Game.shuffle(src_state)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call({:permit, index}, _from, src_state) do
-    dst_state = src_state |> Game.permit(index)
+    dst_state = Game.permit(src_state, index)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call({:build, row, index}, _from, src_state) do
-    dst_state = src_state |> Game.build(row, index)
+    dst_state = Game.build(src_state, row, index)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call({:pool, row, index}, _from, src_state) do
-    dst_state = src_state |> Game.pool(row, index)
+    dst_state = Game.pool(src_state, row, index)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call({:agent, size}, _from, src_state) do
+    dst_state = Game.agent(src_state, size)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call({:park, row}, _from, src_state) do
+    dst_state = Game.park(src_state, row)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
+  def handle_call({:fence, row, index}, _from, src_state) do
+    dst_state = Game.fence(src_state, row, index)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call({:bis, row, index, offset}, _from, src_state) do
-    dst_state = src_state |> Game.bis(row, index, offset)
+    dst_state = Game.bis(src_state, row, index, offset)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call(:commit, _from, src_state) do
-    dst_state = src_state |> Game.commit()
+    dst_state = Game.commit(src_state)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
   def handle_call(:identity, _from, src_state) do
-    {:reply, src_state |> Game.view(), src_state}
+    {:reply, Game.view(src_state), src_state}
   end
 end
