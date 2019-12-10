@@ -95,7 +95,7 @@ defmodule Welcome2Game.Game do
   def agent(state, size) do
     effect = {:agent, size}
     old_value = state.player |> Map.get(:"estate#{size}")
-    new_value = size |> MoveFinder.next_estate(old_value)
+    new_value = MoveFinder.next_estate(size, old_value) || old_value
 
     %State{
       state
@@ -107,6 +107,7 @@ defmodule Welcome2Game.Game do
 
   def park(state, row) do
     effect = {:park, row}
+
     old_value = state.player |> Map.get(:"park#{row}")
     new_value = row |> MoveFinder.next_park(old_value)
 

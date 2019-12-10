@@ -93,7 +93,7 @@ defmodule Welcome2Game.MoveFinder do
   end
 
   def next_park(row, current) do
-    @estates[row][current]
+    @landscaper[row][current]
   end
 
   def moves(%{state: :setup}) do
