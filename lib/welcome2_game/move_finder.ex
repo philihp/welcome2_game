@@ -104,6 +104,24 @@ defmodule Welcome2Game.MoveFinder do
     [{:permit, 0}, {:permit, 1}, {:permit, 2}]
   end
 
+  def moves(%{
+        state: :playing,
+        permit: %Card{suit: "temp-agency", face: number},
+        built: nil,
+        effect: nil,
+        player: player
+      }) do
+    for {row, index} <- @buildable, valid_build?(player, row, index, number) do
+      {:build, row, index}
+    end ++
+      for {row, index} <- @buildable,
+          offset <- [-2, -1, 1, 2],
+          valid_build?(player, row, index, number + offset) do
+        {:temp, row, index, number + offset}
+        # TODO this needs to allow for a house number of zero
+      end
+  end
+
   def moves(%{state: :playing, permit: %Card{face: number}, built: nil, player: player}) do
     for {row, index} <- @buildable, valid_build?(player, row, index, number) do
       {:build, row, index}

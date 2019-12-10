@@ -55,6 +55,11 @@ defmodule Welcome2Game.Server do
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
+  def handle_call({:temp, row, index, offset}, _from, src_state) do
+    dst_state = Game.temp(src_state, row, index, offset)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
   def handle_call(:commit, _from, src_state) do
     dst_state = Game.commit(src_state)
     {:reply, dst_state |> Game.view(), dst_state}

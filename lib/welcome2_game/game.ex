@@ -80,22 +80,6 @@ defmodule Welcome2Game.Game do
     }
   end
 
-  def bis(state, row, index, offset) do
-    effect = {:bis, row, index, offset}
-
-    %State{
-      state
-      | player:
-          struct(state.player, %{
-            :"row#{row}#{index}bis" => true,
-            :"row#{row}#{index}number" =>
-              Map.get(state.player, :"row#{row}#{index + offset}number")
-          }),
-        effect: effect,
-        current_move: [effect | state.current_move]
-    }
-  end
-
   def pool(state, row, index) do
     effect = {:pool, row, index}
 
@@ -139,6 +123,34 @@ defmodule Welcome2Game.Game do
     %State{
       state
       | player: struct(state.player, %{:"fence#{row}#{index}" => true}),
+        effect: effect,
+        current_move: [effect | state.current_move]
+    }
+  end
+
+  def bis(state, row, index, offset) do
+    effect = {:bis, row, index, offset}
+
+    %State{
+      state
+      | player:
+          struct(state.player, %{
+            :"row#{row}#{index}bis" => true,
+            :"row#{row}#{index}number" =>
+              Map.get(state.player, :"row#{row}#{index + offset}number")
+          }),
+        effect: effect,
+        current_move: [effect | state.current_move]
+    }
+  end
+
+  def temp(state, row, index, offset) do
+    effect = {:temp, row, index, offset}
+
+    %State{
+      state
+      | player: struct(state.player, %{:"row#{row}#{index}number" => state.permit.face + offset}),
+        built: {row, index},
         effect: effect,
         current_move: [effect | state.current_move]
     }
