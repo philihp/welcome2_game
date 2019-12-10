@@ -109,11 +109,13 @@ defmodule Welcome2Game.MoveFinder do
         permit: %Card{suit: "temp-agency", face: number},
         built: nil,
         effect: nil,
-        player: player
+        player: player,
+        checkpoint: checkpoint
       }) do
-    for {row, index} <- @buildable, valid_build?(player, row, index, number) do
-      {:build, row, index}
-    end ++
+    rollback(checkpoint) ++
+      for {row, index} <- @buildable, valid_build?(player, row, index, number) do
+        {:build, row, index}
+      end ++
       for {row, index} <- @buildable,
           offset <- [-2, -1, 1, 2],
           valid_build?(player, row, index, number + offset) do
@@ -122,10 +124,17 @@ defmodule Welcome2Game.MoveFinder do
       end
   end
 
-  def moves(%{state: :playing, permit: %Card{face: number}, built: nil, player: player}) do
-    for {row, index} <- @buildable, valid_build?(player, row, index, number) do
-      {:build, row, index}
-    end
+  def moves(%{
+        state: :playing,
+        permit: %Card{face: number},
+        built: nil,
+        player: player,
+        checkpoint: checkpoint
+      }) do
+    rollback(checkpoint) ++
+      for {row, index} <- @buildable, valid_build?(player, row, index, number) do
+        {:build, row, index}
+      end
   end
 
   def moves(%{
@@ -133,9 +142,11 @@ defmodule Welcome2Game.MoveFinder do
         permit: %Card{suit: "pool-manufacturer"},
         built: {row, index},
         effect: nil,
-        player: player
+        player: player,
+        checkpoint: checkpoint
       }) do
     [:commit] ++
+      rollback(checkpoint) ++
       cond do
         valid_pool?(player, row, index) ->
           [{:pool, row, index}]
@@ -150,9 +161,11 @@ defmodule Welcome2Game.MoveFinder do
         permit: %Card{suit: "bis"},
         built: {_, _},
         effect: nil,
-        player: player
+        player: player,
+        checkpoint: checkpoint
       }) do
     [:commit] ++
+      rollback(checkpoint) ++
       for {row, index} <- @buildable,
           offset <- [-1, 1],
           valid_bis?(player, row, index, offset) do
@@ -165,9 +178,11 @@ defmodule Welcome2Game.MoveFinder do
         permit: %Card{suit: "real-estate-agent"},
         built: {_, _},
         effect: nil,
-        player: player
+        player: player,
+        checkpoint: checkpoint
       }) do
     [:commit] ++
+      rollback(checkpoint) ++
       for {size, steps} <- @estates,
           valid_agent?(player, size, steps) do
         {:agent, size}
@@ -179,9 +194,11 @@ defmodule Welcome2Game.MoveFinder do
         permit: %Card{suit: "landscaper"},
         built: {row, _},
         effect: nil,
-        player: player
+        player: player,
+        checkpoint: checkpoint
       }) do
     [:commit] ++
+      rollback(checkpoint) ++
       cond do
         valid_park?(player, row) ->
           [{:park, row}]
@@ -196,24 +213,35 @@ defmodule Welcome2Game.MoveFinder do
         permit: %Card{suit: "surveyor"},
         built: {_, _},
         effect: nil,
-        player: player
+        player: player,
+        checkpoint: checkpoint
       }) do
     [:commit] ++
+      rollback(checkpoint) ++
       for {row, index} <- @fences,
           valid_fence?(player, row, index) do
         {:fence, row, index}
       end
   end
 
-  def moves(%{state: :playing, permit: %Card{}, built: {_, _}}) do
+  def moves(%{state: :playing, permit: %Card{}, built: {_, _}, checkpoint: checkpoint}) do
     IO.puts("unknown permit")
 
-    [:commit]
+    [:commit] ++
+      rollback(checkpoint)
   end
 
   def moves(_state) do
     # e.g. state :gameover
     []
+  end
+
+  defp rollback(nil) do
+    []
+  end
+
+  defp rollback(_checkpoint) do
+    [:rollback]
   end
 
   def valid_build?(player, row, index, number) do

@@ -67,6 +67,7 @@ defmodule Welcome2Game.Game do
     %State{
       state
       | permit: state |> Map.get(:"shown#{number}") |> hd,
+        checkpoint: state.checkpoint || state,
         current_move: [{:permit, number} | state.current_move]
     }
   end
@@ -163,9 +164,14 @@ defmodule Welcome2Game.Game do
         built: nil,
         effect: nil,
         moves: state.current_move ++ [:commit] ++ state.moves,
-        current_move: []
+        current_move: [],
+        checkpoint: nil
     }
     |> draw
+  end
+
+  def rollback(state) do
+    state.checkpoint
   end
 
   def view(state) do

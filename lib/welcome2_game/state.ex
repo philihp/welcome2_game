@@ -7,6 +7,7 @@ defmodule Welcome2Game.State do
     moves: [],
     history: [],
     current_move: [],
+    checkpoint: nil,
     deck0: [],
     deck1: [],
     deck2: [],
