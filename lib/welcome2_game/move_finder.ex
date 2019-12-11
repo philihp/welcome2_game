@@ -119,7 +119,7 @@ defmodule Welcome2Game.MoveFinder do
       for {row, index} <- @buildable,
           offset <- [-2, -1, 1, 2],
           valid_build?(player, row, index, number + offset) do
-        {:temp, row, index, number + offset}
+        {:temp, row, index, offset}
         # TODO this needs to allow for a house number of zero
       end
   end
@@ -149,7 +149,7 @@ defmodule Welcome2Game.MoveFinder do
       rollback(checkpoint) ++
       cond do
         valid_pool?(player, row, index) ->
-          [{:pool, row, index}]
+          [:pool]
 
         true ->
           []
@@ -201,7 +201,7 @@ defmodule Welcome2Game.MoveFinder do
       rollback(checkpoint) ++
       cond do
         valid_park?(player, row) ->
-          [{:park, row}]
+          [:park]
 
         true ->
           []
@@ -225,8 +225,6 @@ defmodule Welcome2Game.MoveFinder do
   end
 
   def moves(%{state: :playing, permit: %Card{}, built: {_, _}, checkpoint: checkpoint}) do
-    IO.puts("unknown permit")
-
     [:commit] ++
       rollback(checkpoint)
   end
@@ -303,6 +301,4 @@ defmodule Welcome2Game.MoveFinder do
     fence_slot === false and
       (left_number === 0 or right_number === 0 or left_number !== right_number)
   end
-
-  # [:poola3, :poola7, :poola8, :poolb1, :poolb4, :poolb8, :poolc2, :poolc7, :pool11]
 end

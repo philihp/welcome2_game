@@ -30,7 +30,11 @@ defmodule Welcome2Game.Game do
       shown0: shown0,
       shown1: shown1,
       shown2: shown2
-    } = state
+    } =
+      cond do
+        length(state.deck0) <= 1 -> shuffle(state)
+        true -> state
+      end
 
     %State{
       state
@@ -81,8 +85,8 @@ defmodule Welcome2Game.Game do
     }
   end
 
-  def pool(state, row, index) do
-    effect = {:pool, row, index}
+  def pool(state = %{built: {row, index}}) do
+    effect = :pool
 
     %State{
       state
@@ -105,11 +109,11 @@ defmodule Welcome2Game.Game do
     }
   end
 
-  def park(state, row) do
-    effect = {:park, row}
+  def park(state = %{built: {row, _}}) do
+    effect = :park
 
-    old_value = state.player |> Map.get(:"park#{row}")
-    new_value = row |> MoveFinder.next_park(old_value)
+    old_value = Map.get(state.player, :"park#{row}")
+    new_value = MoveFinder.next_park(row, old_value)
 
     %State{
       state

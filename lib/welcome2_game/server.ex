@@ -30,8 +30,8 @@ defmodule Welcome2Game.Server do
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
-  def handle_call({:pool, row, index}, _from, src_state) do
-    dst_state = Game.pool(src_state, row, index)
+  def handle_call(:pool, _from, src_state) do
+    dst_state = Game.pool(src_state)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
@@ -40,8 +40,8 @@ defmodule Welcome2Game.Server do
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
-  def handle_call({:park, row}, _from, src_state) do
-    dst_state = Game.park(src_state, row)
+  def handle_call(:park, _from, src_state) do
+    dst_state = Game.park(src_state)
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
