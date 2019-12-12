@@ -100,8 +100,19 @@ defmodule Welcome2Game.MoveFinder do
     [:start]
   end
 
-  def moves(%{state: :playing, permit: nil}) do
-    [{:permit, 0}, {:permit, 1}, {:permit, 2}]
+  def moves(state = %{state: :playing, permit: nil, player: player}) do
+    # gross
+    permits = %{
+      0 => state.shown0,
+      1 => state.shown1,
+      2 => state.shown2
+    }
+
+    refusable(
+      for permit_num <- 0..2, valid_permit?(player, permits[permit_num]) do
+        {:permit, permit_num}
+      end
+    )
   end
 
   def moves(%{
@@ -113,14 +124,10 @@ defmodule Welcome2Game.MoveFinder do
         checkpoint: checkpoint
       }) do
     rollback(checkpoint) ++
-      for {row, index} <- @buildable, valid_build?(player, row, index, number) do
-        {:build, row, index}
-      end ++
       for {row, index} <- @buildable,
-          offset <- [-2, -1, 1, 2],
+          offset <- [-2, -1, 0, 1, 2],
           valid_build?(player, row, index, number + offset) do
         {:temp, row, index, offset}
-        # TODO this needs to allow for a house number of zero
       end
   end
 
@@ -229,6 +236,11 @@ defmodule Welcome2Game.MoveFinder do
       rollback(checkpoint)
   end
 
+  def moves(%{state: :playing, permit: :refused, checkpoint: checkpoint}) do
+    [:commit] ++
+      rollback(checkpoint)
+  end
+
   def moves(_state) do
     # e.g. state :gameover
     []
@@ -240,6 +252,22 @@ defmodule Welcome2Game.MoveFinder do
 
   defp rollback(_checkpoint) do
     [:rollback]
+  end
+
+  def valid_permit?(player, [%Card{face: number, suit: "temp-agency"} | _]) do
+    Enum.any?(@buildable, fn {row, index} ->
+      Enum.any?([-2, -1, 0, 1, 2], fn offset ->
+        valid_build?(player, row, index, number + offset)
+      end)
+    end)
+  end
+
+  def valid_permit?(player, [%Card{face: number} | _]) do
+    Enum.any?(@buildable, fn {row, index} -> valid_build?(player, row, index, number) end)
+  end
+
+  def valid_permit?(_, nil) do
+    false
   end
 
   def valid_build?(player, row, index, number) do
@@ -300,5 +328,13 @@ defmodule Welcome2Game.MoveFinder do
 
     fence_slot === false and
       (left_number === 0 or right_number === 0 or left_number !== right_number)
+  end
+
+  def refusable([]) do
+    [:refuse]
+  end
+
+  def refusable(moves) do
+    moves
   end
 end

@@ -65,6 +65,11 @@ defmodule Welcome2Game.Server do
     {:reply, dst_state |> Game.view(), dst_state}
   end
 
+  def handle_call(:refuse, _from, src_state) do
+    dst_state = Game.refuse(src_state)
+    {:reply, dst_state |> Game.view(), dst_state}
+  end
+
   def handle_call(:rollback, _from, src_state) do
     dst_state = Game.rollback(src_state)
     {:reply, dst_state |> Game.view(), dst_state}

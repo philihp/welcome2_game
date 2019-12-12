@@ -76,6 +76,16 @@ defmodule Welcome2Game.Game do
     }
   end
 
+  def refuse(state) do
+    %State{
+      state
+      | player: struct(state.player, %{refusals: state.player.refusals + 1}),
+        permit: :refused,
+        checkpoint: state.checkpoint || state,
+        current_move: [:refuse | state.current_move]
+    }
+  end
+
   def build(state, row, index) do
     %State{
       state
