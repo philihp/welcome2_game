@@ -90,7 +90,11 @@ defmodule Welcome2Game.Game do
 
     %State{
       state
-      | player: struct(state.player, %{:"row#{row}#{index}pool" => true}),
+      | player:
+          struct(state.player, %{
+            :pools => state.player.pools + 1,
+            :"row#{row}#{index}pool" => true
+          }),
         effect: effect,
         current_move: [effect | state.current_move]
     }
@@ -142,6 +146,7 @@ defmodule Welcome2Game.Game do
       | player:
           struct(state.player, %{
             :"row#{row}#{index}bis" => true,
+            :bis => state.player.bis + 1,
             :"row#{row}#{index}number" =>
               Map.get(state.player, :"row#{row}#{index + offset}number")
           }),
@@ -155,7 +160,11 @@ defmodule Welcome2Game.Game do
 
     %State{
       state
-      | player: struct(state.player, %{:"row#{row}#{index}number" => state.permit.face + offset}),
+      | player:
+          struct(state.player, %{
+            :"row#{row}#{index}number" => state.permit.face + offset,
+            :temps => state.player.temps + 1
+          }),
         built: {row, index},
         effect: effect,
         current_move: [effect | state.current_move]
