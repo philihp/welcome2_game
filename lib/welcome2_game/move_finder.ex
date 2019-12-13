@@ -276,8 +276,6 @@ defmodule Welcome2Game.MoveFinder do
     is_higher = fn x -> x > number end
     house_number = fn i -> Map.get(player, :"row#{row}#{i}number", 0) end
 
-    IO.inspect(binding())
-
     Enum.all?([
       house_number.(index) === nil,
       1..index

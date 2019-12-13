@@ -1,5 +1,5 @@
 defmodule Welcome2Game.Game do
-  alias Welcome2Game.{Card, State, Tableau, MoveFinder}
+  alias Welcome2Game.{Card, Plan, State, Tableau, MoveFinder}
 
   def new_game do
     deck =
@@ -7,10 +7,23 @@ defmodule Welcome2Game.Game do
       |> Poison.decode!(as: [%Card{}])
       |> Enum.shuffle()
 
+    [plan0, plan1, plan2] =
+      Enum.map(
+        Welcome2Constants.plans(),
+        fn json ->
+          Poison.decode!(json, as: [%Welcome2Game.Plan{}])
+          |> Enum.shuffle()
+          |> hd
+        end
+      )
+
     size = deck |> length |> div(3)
 
     %State{
       state: :playing,
+      plan0: plan0,
+      plan1: plan1,
+      plan2: plan2,
       deck0: deck |> Enum.slice(0 * size, size),
       deck1: deck |> Enum.slice(1 * size, size),
       deck2: deck |> Enum.slice(2 * size, size),
@@ -201,6 +214,12 @@ defmodule Welcome2Game.Game do
   def view(state) do
     %{
       player: state.player |> Map.from_struct(),
+      plan0: state.plan0,
+      plan1: state.plan1,
+      plan2: state.plan2,
+      plan0_used: state.plan0_used,
+      plan1_used: state.plan1_used,
+      plan2_used: state.plan2_used,
       deck0_suit: state.deck0 |> top |> Map.get(:suit),
       deck1_suit: state.deck1 |> top |> Map.get(:suit),
       deck2_suit: state.deck2 |> top |> Map.get(:suit),
