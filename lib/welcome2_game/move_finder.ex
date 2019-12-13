@@ -271,13 +271,15 @@ defmodule Welcome2Game.MoveFinder do
   end
 
   def valid_build?(player, row, index, number) do
-    unoccupied = fn x -> x != 0 end
+    unoccupied = fn x -> x !== nil end
     is_lower = fn x -> x < number end
     is_higher = fn x -> x > number end
     house_number = fn i -> Map.get(player, :"row#{row}#{i}number", 0) end
 
+    IO.inspect(binding())
+
     Enum.all?([
-      house_number.(index) === 0,
+      house_number.(index) === nil,
       1..index
       |> Enum.map(house_number)
       |> Enum.filter(unoccupied)
@@ -301,11 +303,11 @@ defmodule Welcome2Game.MoveFinder do
       # existing offset build is not a real index
       existing === :invalid -> false
       # existing build has not been built
-      existing === 0 -> false
+      existing === nil -> false
       # new build is not a real index
       newbuild === :invalid -> false
       # new build has already been built
-      newbuild !== 0 -> false
+      newbuild !== nil -> false
       # fence exists between index and offset
       Map.get(player, :"fence#{row}#{min(index + offset, index)}", false) -> false
       # its cool
@@ -327,7 +329,7 @@ defmodule Welcome2Game.MoveFinder do
     right_number = Map.get(player, :"row#{row}#{index + 1}number")
 
     fence_slot === false and
-      (left_number === 0 or right_number === 0 or left_number !== right_number)
+      (left_number === nil or right_number === nil or left_number !== right_number)
   end
 
   def refusable([]) do
