@@ -155,6 +155,12 @@ defmodule Welcome2Game.Tableau do
     estate6: 6,
     bis: 0,
     roundabout: 0,
-    refusals: 0
+    refusals: 0,
+    built_estates1: 0,
+    built_estates2: 0,
+    built_estates3: 0,
+    built_estates4: 0,
+    built_estates5: 0,
+    built_estates6: 0
   )
 end
