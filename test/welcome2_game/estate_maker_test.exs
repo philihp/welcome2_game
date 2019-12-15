@@ -4,24 +4,36 @@ defmodule Welcome2Game.EstateMakerTest do
 
   describe "#update" do
     test "merges all rows" do
-      player =
-        EstateMaker.update(%Tableau{
-          rowa1number: 1,
-          rowa2number: 2,
-          rowa3number: 3,
-          fencea3: true,
-          rowa4number: 4,
-          rowa5number: 5,
-          rowa6number: 6,
-          fencea6: true,
-          fenceb3: true,
-          rowb4number: 4,
-          rowb5number: 5,
-          rowb6number: 7,
-          fenceb6: true
-        })
+      player_before = %Tableau{
+        rowa1number: 1,
+        rowa2number: 2,
+        rowa3number: 3,
+        fencea3: true,
+        rowa4number: 4,
+        rowa5number: 5,
+        rowa6number: 6,
+        fencea6: true,
+        fenceb3: true,
+        rowb4number: 4,
+        rowb5number: 5,
+        rowb6number: 7,
+        fenceb6: true,
+        fencec3: true,
+        rowc4number: 4,
+        rowc5number: 5,
+        rowc6number: 7,
+        rowc7number: 10,
+        fencec7: true
+      }
 
-      assert player.built_estates3 == 3
+      player_after = EstateMaker.update(player_before)
+
+      assert player_after.built_estates1 == 0
+      assert player_after.built_estates2 == 0
+      assert player_after.built_estates3 == 3
+      assert player_after.built_estates4 == 1
+      assert player_after.built_estates5 == 0
+      assert player_after.built_estates6 == 0
     end
   end
 
