@@ -237,5 +237,12 @@ defmodule Welcome2Game.EstateMakerTest do
                [false, false, true, false, true]
              ) == [0, 10]
     end
+
+    test "|house|house|house|house|house|house|house|house|" do
+      assert EstateMaker.estates_from_row(
+               [true, true, true, true, true, true, true, true],
+               [true, true, true, true, true, true, true, true]
+             ) == [1, 1, 1, 1, 1, 1, 1, 1]
+    end
   end
 end
