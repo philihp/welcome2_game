@@ -84,7 +84,7 @@ defmodule Welcome2Game.EstatePlannerTest do
   end
 
   describe "#first_estate_at" do
-    test "" do
+    test "find the first available estate" do
       player = %Tableau{
         rowa1number: 1,
         rowa2number: 2,
@@ -100,9 +100,12 @@ defmodule Welcome2Game.EstatePlannerTest do
         rowa10number: 10
       }
 
-      # assert EstatePlanner.first_estate_at(%State{player: player}, 3) == {:a, 5}
-      # assert EstatePlanner.first_estate_at(%State{player: player}, 4) == {:a, 1}
+      assert EstatePlanner.first_estate_at(%State{player: player}, 1) == nil
+      assert EstatePlanner.first_estate_at(%State{player: player}, 2) == nil
+      assert EstatePlanner.first_estate_at(%State{player: player}, 3) == {:a, 5}
+      assert EstatePlanner.first_estate_at(%State{player: player}, 4) == {:a, 1}
       assert EstatePlanner.first_estate_at(%State{player: player}, 5) == nil
+      assert EstatePlanner.first_estate_at(%State{player: player}, 6) == nil
     end
   end
 
