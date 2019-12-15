@@ -2,6 +2,29 @@ defmodule Welcome2Game.EstateMakerTest do
   alias Welcome2Game.{EstateMaker, Tableau}
   use ExUnit.Case
 
+  describe "#update" do
+    test "merges all rows" do
+      player =
+        EstateMaker.update(%Tableau{
+          rowa1number: 1,
+          rowa2number: 2,
+          rowa3number: 3,
+          fencea3: true,
+          rowa4number: 4,
+          rowa5number: 5,
+          rowa6number: 6,
+          fencea6: true,
+          fenceb3: true,
+          rowb4number: 4,
+          rowb5number: 5,
+          rowb6number: 7,
+          fenceb6: true
+        })
+
+      assert player.built_estates3 == 3
+    end
+  end
+
   describe "#houses_from_player" do
     test "does it" do
       player = %Tableau{
@@ -57,7 +80,7 @@ defmodule Welcome2Game.EstateMakerTest do
   end
 
   describe "#estates_from_player" do
-    test "does it" do
+    test "shows a single estate of size 3" do
       player = %Tableau{
         rowa1number: 1,
         rowa2number: 2,
@@ -67,10 +90,47 @@ defmodule Welcome2Game.EstateMakerTest do
         fencea5: true
       }
 
-      assert EstateMaker.estates_from_player(player, :a) == %{
-               0 => 2,
-               3 => 1
-             }
+      assert EstateMaker.estates_from_player(player, :a) == %{3 => 1}
+    end
+
+    test "does not use estate blocks which have been used" do
+      player = %Tableau{
+        rowa1number: 1,
+        rowa2number: 2,
+        rowa3number: 3,
+        rowa4number: 4,
+        fencea4: true,
+        rowa5number: 4,
+        rowa5bis: true,
+        rowa5plan: true,
+        rowa6number: 6,
+        rowa6plan: true,
+        rowa7number: 8,
+        rowa7plan: true,
+        rowa8number: 10,
+        rowa8plan: true,
+        fencea8: true
+      }
+
+      assert EstateMaker.estates_from_player(player, :a) == %{4 => 1}
+    end
+
+    test "counts multiple estates" do
+      player = %Tableau{
+        rowa1number: 1,
+        rowa2number: 2,
+        rowa3number: 3,
+        rowa4number: 4,
+        fencea4: true,
+        rowa5number: 4,
+        rowa5bis: true,
+        rowa6number: 6,
+        rowa7number: 8,
+        rowa8number: 10,
+        fencea8: true
+      }
+
+      assert EstateMaker.estates_from_player(player, :a) == %{4 => 2}
     end
   end
 

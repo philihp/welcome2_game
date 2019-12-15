@@ -1,7 +1,7 @@
 defmodule Welcome2Game.EstatePlanner do
-  alias Welcome2Game.Tableau
+  alias Welcome2Game.State
 
-  def update(player = %Tableau{}) do
-    player
+  def update(state = %State{}) do
+    state
   end
 end

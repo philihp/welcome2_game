@@ -1,48 +1,50 @@
 defmodule Welcome2Game.EstateMaker do
-  alias Welcome2Game.Tableau
+  alias Welcome2Game.{Tableau, State}
+
+  @houses_per_row %{
+    a: 10,
+    b: 11,
+    c: 12
+  }
 
   def a <|> b do
     Map.merge(a, b, fn _k, va, vb -> va + vb end)
   end
 
+  def update(state = %State{}) do
+    %State{
+      state
+      | player: update(state.player)
+    }
+  end
+
   def update(player = %Tableau{}) do
-    %{
-      1 => estates1,
-      2 => estates2,
-      3 => estates3,
-      4 => estates4,
-      5 => estates5,
-      6 => estates6
-    } =
+    estates =
       estates_from_player(player, :a)
       <|> estates_from_player(player, :b)
       <|> estates_from_player(player, :c)
 
     %Tableau{
       player
-      | built_estates1: estates1,
-        built_estates2: estates2,
-        built_estates3: estates3,
-        built_estates4: estates4,
-        built_estates5: estates5,
-        built_estates6: estates6
+      | built_estates1: Map.get(estates, 1, 0),
+        built_estates2: Map.get(estates, 2, 0),
+        built_estates3: Map.get(estates, 3, 0),
+        built_estates4: Map.get(estates, 4, 0),
+        built_estates5: Map.get(estates, 5, 0),
+        built_estates6: Map.get(estates, 6, 0)
     }
   end
 
   def estates_from_player(player = %Tableau{}, which) do
-    houses_per_row = %{
-      a: 10,
-      b: 11,
-      c: 12
-    }
-
-    houses = player |> houses_from_player(which, houses_per_row[which]) |> Enum.reverse()
-    fences = player |> fences_from_player(which, houses_per_row[which]) |> Enum.reverse()
+    houses = player |> houses_from_player(which, @houses_per_row[which]) |> Enum.reverse()
+    fences = player |> fences_from_player(which, @houses_per_row[which]) |> Enum.reverse()
 
     estates_from_row(houses, fences)
     |> Enum.map(&estate_sizer/1)
     |> Enum.reduce(%{}, fn estatesize, accum ->
-      Map.update(accum, estatesize, 1, &(&1 + 1))
+      (estatesize != 0 &&
+         Map.update(accum, estatesize, 1, &(&1 + 1))) ||
+        accum
     end)
   end
 

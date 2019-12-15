@@ -204,27 +204,13 @@ defmodule Welcome2Game.Game do
         current_move: [],
         checkpoint: nil
     }
-    |> update_estates
-    |> update_plans
+    |> EstateMaker.update()
+    |> EstatePlanner.update()
     |> draw
   end
 
   def rollback(state) do
     state.checkpoint
-  end
-
-  def update_estates(state) do
-    %State{
-      state
-      | player: EstateMaker.update(state.player)
-    }
-  end
-
-  def update_plans(state) do
-    %State{
-      state
-      | player: EstatePlanner.update(state.player)
-    }
   end
 
   def view(state) do
