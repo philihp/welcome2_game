@@ -2,13 +2,41 @@ defmodule Welcome2Game.EstatePlannerTest do
   alias Welcome2Game.{EstatePlanner, State, Plan, Tableau}
   use ExUnit.Case
 
+  describe "#update" do
+    test "basically it does it" do
+      state = %State{
+        plan1: %Plan{needs: %{1 => 6}, points1: 10, points2: 5},
+        plan2: %Plan{needs: %{2 => 3}, points1: 9, points2: 4},
+        plan3: %Plan{needs: %{6 => 2}, points1: 8, points2: 3},
+        player: %Tableau{
+          built_estates2: 3,
+          rowa1number: 1,
+          rowa2number: 2,
+          fencea2: true,
+          rowa3number: 3,
+          rowa4number: 4,
+          fencea4: true,
+          rowa5number: 5,
+          rowa6number: 5,
+          fencea6: true
+        }
+      }
+
+      result = EstatePlanner.update(state)
+
+      assert result.plan1_used == false
+      assert result.plan2_used == true
+      assert result.plan3_used == false
+    end
+  end
+
   describe "#satisfy_plan?" do
     test "satisfies positive" do
       state = %State{
         plan1: %Plan{
           needs: %{
-            "3" => 3,
-            "4" => 1
+            3 => 3,
+            4 => 1
           }
         },
         player: %Tableau{
@@ -28,7 +56,7 @@ defmodule Welcome2Game.EstatePlannerTest do
       state = %State{
         plan1: %Plan{
           needs: %{
-            "1" => 2
+            1 => 2
           }
         },
         player: %Tableau{
@@ -48,8 +76,8 @@ defmodule Welcome2Game.EstatePlannerTest do
       state = %State{
         plan1: %Plan{
           needs: %{
-            "3" => 3,
-            "4" => 1
+            3 => 3,
+            4 => 1
           }
         },
         player: %Tableau{

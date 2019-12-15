@@ -18,13 +18,13 @@ defmodule Welcome2Game.EstatePlanner do
         }
       ) do
     state
-    |> maybe_apply_plan(plan1, plan1_used)
-    |> maybe_apply_plan(plan2, plan2_used)
-    |> maybe_apply_plan(plan3, plan3_used)
+    |> maybe_apply_plan(plan1, plan1_used, 1)
+    |> maybe_apply_plan(plan2, plan2_used, 2)
+    |> maybe_apply_plan(plan3, plan3_used, 3)
   end
 
-  def maybe_apply_plan(state = %State{}, plan, used) do
-    (!used && satisfy_plan?(state, plan) && with_plan(state, plan)) || state
+  def maybe_apply_plan(state = %State{}, plan, used, n) do
+    (!used && satisfy_plan?(state, plan) && with_plan(state, plan, used, n)) || state
   end
 
   def satisfy_plan?(%State{player: player}, %Plan{needs: needs}) do
@@ -35,11 +35,20 @@ defmodule Welcome2Game.EstatePlanner do
     )
   end
 
-  def with_plan(state, plan) do
-    Enum.reduce(plan_needs(plan), state, fn blocksize, state ->
-      {row, index} = first_estate_at(state, blocksize)
-      block_off(state, blocksize, row, index)
-    end)
+  def with_plan(state, plan, used, n) do
+    state =
+      Enum.reduce(plan_needs(plan), state, fn blocksize, state ->
+        {row, index} = first_estate_at(state, blocksize)
+        block_off(state, blocksize, row, index)
+      end)
+
+    struct(state, %{
+      :"plan#{n}_used" => true,
+      player:
+        struct(state.player, %{
+          :"plan#{n}" => (!used && plan.points1) || plan.points2
+        })
+    })
   end
 
   def plan_needs(%Plan{needs: needs}) do
