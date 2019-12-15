@@ -5,7 +5,7 @@ defmodule Welcome2Game.EstateMaker do
     Map.merge(a, b, fn _k, va, vb -> va + vb end)
   end
 
-  def with_estates(player = %Tableau{}) do
+  def update(player = %Tableau{}) do
     %{
       1 => estates1,
       2 => estates2,
@@ -18,14 +18,15 @@ defmodule Welcome2Game.EstateMaker do
       <|> estates_from_player(player, :b)
       <|> estates_from_player(player, :c)
 
-    struct(player, %{
-      built_estates1: estates1,
-      built_estates2: estates2,
-      built_estates3: estates3,
-      built_estates4: estates4,
-      built_estates5: estates5,
-      built_estates6: estates6
-    })
+    %Tableau{
+      player
+      | built_estates1: estates1,
+        built_estates2: estates2,
+        built_estates3: estates3,
+        built_estates4: estates4,
+        built_estates5: estates5,
+        built_estates6: estates6
+    }
   end
 
   def estates_from_player(player = %Tableau{}, which) do
@@ -36,7 +37,6 @@ defmodule Welcome2Game.EstateMaker do
     }
 
     houses = player |> houses_from_player(which, houses_per_row[which]) |> Enum.reverse()
-
     fences = player |> fences_from_player(which, houses_per_row[which]) |> Enum.reverse()
 
     estates_from_row(houses, fences)
@@ -90,7 +90,8 @@ defmodule Welcome2Game.EstateMaker do
 
   def houses_from_player(player, which, curr) when curr >= 1 do
     [
-      Map.get(player, :"row#{which}#{curr}number", :invalid) !== nil
+      Map.get(player, :"row#{which}#{curr}number", :invalid) !== nil &&
+        Map.get(player, :"row#{which}#{curr}plan", :invalid) === false
       | houses_from_player(player, which, curr - 1)
     ]
   end

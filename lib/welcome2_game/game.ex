@@ -1,5 +1,5 @@
 defmodule Welcome2Game.Game do
-  alias Welcome2Game.{Card, Plan, State, Tableau, MoveFinder, EstateMaker}
+  alias Welcome2Game.{Card, Plan, State, Tableau, MoveFinder, EstateMaker, EstatePlanner}
 
   def new_game do
     deck =
@@ -204,7 +204,8 @@ defmodule Welcome2Game.Game do
         current_move: [],
         checkpoint: nil
     }
-    |> estate
+    |> update_estates
+    |> update_plans
     |> draw
   end
 
@@ -212,35 +213,18 @@ defmodule Welcome2Game.Game do
     state.checkpoint
   end
 
-  def estate(state) do
-    %{
-      1 => estates1,
-      2 => estates2,
-      3 => estates3,
-      4 => estates4,
-      5 => estates5,
-      6 => estates6
-    } = EstateMaker.estates_from_player(state.player)
-
+  def update_estates(state) do
     %State{
       state
-      | player:
-          struct(state.player, %{
-            built_estates1: estates1,
-            built_estates2: estates2,
-            built_estates3: estates3,
-            built_estates4: estates4,
-            built_estates5: estates5,
-            built_estates6: estates6
-          })
+      | player: EstateMaker.update(state.player)
     }
   end
 
-  def estates_of_size_from_row(_player, _row) do
-  end
-
-  def estate_is_full(estate) do
-    Enum.all?(estate)
+  def update_plans(state) do
+    %State{
+      state
+      | player: EstatePlanner.update(state.player)
+    }
   end
 
   def view(state) do
