@@ -7,7 +7,7 @@ defmodule Welcome2Game.Game do
       |> Poison.decode!(as: [%Card{}])
       |> Enum.shuffle()
 
-    [plan0, plan1, plan2] =
+    [plan1, plan2, plan3] =
       Enum.map(
         Welcome2Constants.plans(),
         fn json ->
@@ -21,9 +21,9 @@ defmodule Welcome2Game.Game do
 
     %State{
       state: :playing,
-      plan0: plan0,
       plan1: plan1,
       plan2: plan2,
+      plan3: plan3,
       deck0: deck |> Enum.slice(0 * size, size),
       deck1: deck |> Enum.slice(1 * size, size),
       deck2: deck |> Enum.slice(2 * size, size),
