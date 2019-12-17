@@ -24,12 +24,12 @@ defmodule Welcome2Game.Game do
       plan1: plan1,
       plan2: plan2,
       plan3: plan3,
-      deck0: deck |> Enum.slice(0 * size, size),
-      deck1: deck |> Enum.slice(1 * size, size),
-      deck2: deck |> Enum.slice(2 * size, size),
-      shown0: [],
+      deck1: deck |> Enum.slice(0 * size, size),
+      deck2: deck |> Enum.slice(1 * size, size),
+      deck3: deck |> Enum.slice(2 * size, size),
       shown1: [],
       shown2: [],
+      shown3: [],
       player: %Tableau{}
     }
     |> draw
@@ -37,32 +37,32 @@ defmodule Welcome2Game.Game do
 
   def draw(state) do
     %{
-      deck0: [drawn_card0 | remainder_deck0],
       deck1: [drawn_card1 | remainder_deck1],
       deck2: [drawn_card2 | remainder_deck2],
-      shown0: shown0,
+      deck3: [drawn_card3 | remainder_deck3],
       shown1: shown1,
-      shown2: shown2
+      shown2: shown2,
+      shown3: shown3
     } =
       cond do
-        length(state.deck0) <= 1 -> shuffle(state)
+        length(state.deck1) <= 1 -> shuffle(state)
         true -> state
       end
 
     %State{
       state
-      | deck0: remainder_deck0,
-        deck1: remainder_deck1,
+      | deck1: remainder_deck1,
         deck2: remainder_deck2,
-        shown0: [drawn_card0 | shown0],
+        deck3: remainder_deck3,
         shown1: [drawn_card1 | shown1],
-        shown2: [drawn_card2 | shown2]
+        shown2: [drawn_card2 | shown2],
+        shown3: [drawn_card3 | shown3]
     }
   end
 
   def shuffle(state) do
     deck =
-      (state.deck0 ++ state.shown0 ++ state.deck1 ++ state.shown1 ++ state.deck2 ++ state.shown2)
+      (state.deck1 ++ state.shown1 ++ state.deck2 ++ state.shown2 ++ state.deck3 ++ state.shown3)
       |> Enum.shuffle()
 
     len = deck |> length
@@ -70,12 +70,12 @@ defmodule Welcome2Game.Game do
 
     %State{
       state
-      | deck0: deck |> Enum.slice(0 * size, size),
-        deck1: deck |> Enum.slice(1 * size, size),
-        deck2: deck |> Enum.slice(2 * size, size),
-        shown0: [],
+      | deck1: deck |> Enum.slice(0 * size, size),
+        deck2: deck |> Enum.slice(1 * size, size),
+        deck3: deck |> Enum.slice(2 * size, size),
         shown1: [],
-        shown2: []
+        shown2: [],
+        shown3: []
     }
     |> draw
   end
@@ -216,21 +216,21 @@ defmodule Welcome2Game.Game do
   def view(state) do
     %{
       player: state.player |> Map.from_struct(),
-      plan0: state.plan0,
       plan1: state.plan1,
       plan2: state.plan2,
-      plan0_used: state.plan0_used,
+      plan3: state.plan3,
       plan1_used: state.plan1_used,
       plan2_used: state.plan2_used,
-      deck0_suit: state.deck0 |> top |> Map.get(:suit),
+      plan3_used: state.plan3_used,
       deck1_suit: state.deck1 |> top |> Map.get(:suit),
       deck2_suit: state.deck2 |> top |> Map.get(:suit),
-      deck0_length: state.deck0 |> length,
+      deck3_suit: state.deck3 |> top |> Map.get(:suit),
       deck1_length: state.deck1 |> length,
       deck2_length: state.deck2 |> length,
-      shown0: state.shown0 |> top,
+      deck3_length: state.deck3 |> length,
       shown1: state.shown1 |> top,
       shown2: state.shown2 |> top,
+      shown3: state.shown3 |> top,
       state: state.state,
       permit: state.permit,
       built: state.built,

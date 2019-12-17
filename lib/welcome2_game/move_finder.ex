@@ -103,13 +103,13 @@ defmodule Welcome2Game.MoveFinder do
   def moves(state = %{state: :playing, permit: nil, player: player}) do
     # gross
     permits = %{
-      0 => state.shown0,
       1 => state.shown1,
-      2 => state.shown2
+      2 => state.shown2,
+      3 => state.shown3
     }
 
     refusable(
-      for permit_num <- 0..2, valid_permit?(player, permits[permit_num]) do
+      for permit_num <- 1..3, valid_permit?(player, permits[permit_num]) do
         {:permit, permit_num}
       end
     )
