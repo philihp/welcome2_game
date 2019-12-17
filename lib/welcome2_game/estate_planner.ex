@@ -1,5 +1,5 @@
 defmodule Welcome2Game.EstatePlanner do
-  alias Welcome2Game.{State, Plan, Tableau}
+  alias Welcome2Game.{State, Plan, Tableau, EstateMaker}
 
   @houses_per_row %{
     a: 10,
@@ -36,19 +36,34 @@ defmodule Welcome2Game.EstatePlanner do
   end
 
   def with_plan(state, plan, used, n) do
-    state =
-      Enum.reduce(plan_needs(plan), state, fn blocksize, state ->
-        {row, index} = first_estate_at(state, blocksize)
-        block_off(state, blocksize, row, index)
-      end)
+    state
+    |> with_plan_mark_slots(plan)
+    |> with_plan_mark_plan(n)
+    |> with_plan_give_points(n, plan, used)
+  end
 
-    struct(state, %{
-      :"plan#{n}_used" => true,
-      player:
-        struct(state.player, %{
-          :"plan#{n}" => (!used && plan.points1) || plan.points2
-        })
-    })
+  def with_plan_mark_slots(state, plan) do
+    Enum.reduce(plan_needs(plan), state, fn blocksize, state ->
+      {row, index} = first_estate_at(state, blocksize)
+
+      state
+      |> with_plan_block_off(blocksize, row, index)
+      |> with_plan_block_chunks(blocksize)
+    end)
+  end
+
+  def with_plan_mark_plan(state, n) do
+    struct(state, %{:"plan#{n}_used" => true})
+  end
+
+  def with_plan_give_points(state, n, plan, used) do
+    %State{
+      state
+      | player:
+          struct(state.player, %{
+            :"plan#{n}" => (!used && plan.points1) || plan.points2
+          })
+    }
   end
 
   def subtract_plan(state, %Plan{needs: _needs}) do
@@ -107,9 +122,21 @@ defmodule Welcome2Game.EstatePlanner do
     )
   end
 
-  def block_off(state, blocksize, row, index) do
+  def with_plan_block_off(state, blocksize, row, index) do
     Enum.reduce(0..(blocksize - 1), state, fn offset, state ->
       %State{state | player: struct(state.player, %{:"row#{row}#{index + offset}plan" => true})}
     end)
+  end
+
+  def with_plan_block_chunks(state, blocksize) do
+    old = Map.get(state.player, :"built_estates#{blocksize}", 0)
+
+    %State{
+      state
+      | player:
+          struct(state.player, %{
+            :"built_estates#{blocksize}" => old - 1
+          })
+    }
   end
 end

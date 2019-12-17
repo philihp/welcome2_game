@@ -195,15 +195,211 @@ defmodule Welcome2Game.EstatePlannerTest do
     end
   end
 
-  describe "#block_off" do
+  describe "#with_plan_block_off" do
     test "blocks off a set of slots" do
-      state = EstatePlanner.block_off(%State{player: %Tableau{}}, 3, :b, 5)
+      state = EstatePlanner.with_plan_block_off(%State{player: %Tableau{}}, 3, :b, 5)
 
       assert state.player.rowb4plan == false
       assert state.player.rowb5plan == true
       assert state.player.rowb6plan == true
       assert state.player.rowb7plan == true
       assert state.player.rowb8plan == false
+    end
+  end
+
+  describe "#with_plan" do
+    test "removes calculated estate counts" do
+      src = %State{
+        plan1: %Plan{needs: %{3 => 2}},
+        plan2: %Plan{needs: %{4 => 1}},
+        plan3: %Plan{needs: %{6 => 1}},
+        player: %Tableau{
+          fencea1: true,
+          rowa2number: 1,
+          rowa3number: 2,
+          rowa4number: 3,
+          rowa5number: 4,
+          rowa6number: 5,
+          rowa7number: 6,
+          fencea7: true,
+          rowb1number: 1,
+          rowb2number: 2,
+          rowb3number: 3,
+          rowb4number: 4,
+          fenceb4: true,
+          rowb5number: 5,
+          rowb6number: 6,
+          rowb7number: 7,
+          rowb8number: 8,
+          fenceb8: true,
+          rowc1number: 1,
+          rowc2number: 2,
+          rowc3number: 3,
+          fencec3: true,
+          rowc4number: 4,
+          rowc5number: 5,
+          rowc6number: 6,
+          fencec6: true,
+          built_estates1: 0,
+          built_estates2: 0,
+          built_estates3: 2,
+          built_estates4: 1,
+          built_estates5: 0,
+          built_estates6: 1
+        }
+      }
+
+      dst = EstatePlanner.with_plan(src, src.plan1, false, 1)
+
+      assert dst.player.built_estates1 == 0
+      assert dst.player.built_estates2 == 0
+      assert dst.player.built_estates3 == 0
+      assert dst.player.built_estates4 == 1
+      assert dst.player.built_estates5 == 0
+      assert dst.player.built_estates6 == 1
+    end
+
+    test "marks slots as used" do
+      src = %State{
+        plan1: %Plan{needs: %{3 => 2}},
+        plan2: %Plan{needs: %{4 => 1}},
+        plan3: %Plan{needs: %{6 => 1}},
+        player: %Tableau{
+          fencea1: true,
+          rowa2number: 1,
+          rowa3number: 2,
+          rowa4number: 3,
+          rowa5number: 4,
+          rowa6number: 5,
+          rowa7number: 6,
+          fencea7: true,
+          rowb1number: 1,
+          rowb2number: 2,
+          rowb3number: 3,
+          rowb4number: 4,
+          fenceb4: true,
+          rowb5number: 5,
+          rowb6number: 6,
+          rowb7number: 7,
+          rowb8number: 8,
+          fenceb8: true,
+          rowc1number: 1,
+          rowc2number: 2,
+          rowc3number: 3,
+          fencec3: true,
+          rowc4number: 4,
+          rowc5number: 5,
+          rowc6number: 6,
+          fencec6: true,
+          built_estates1: 0,
+          built_estates2: 0,
+          built_estates3: 2,
+          built_estates4: 1,
+          built_estates5: 0,
+          built_estates6: 1
+        }
+      }
+
+      dst = EstatePlanner.with_plan(src, src.plan1, false, 1)
+
+      assert dst.player.rowc1plan == true
+      assert dst.player.rowc2plan == true
+      assert dst.player.rowc3plan == true
+      assert dst.player.rowc4plan == true
+      assert dst.player.rowc5plan == true
+      assert dst.player.rowc6plan == true
+    end
+
+    test "marks plan as used" do
+      src = %State{
+        plan1: %Plan{needs: %{3 => 2}},
+        plan2: %Plan{needs: %{4 => 1}},
+        plan3: %Plan{needs: %{6 => 1}},
+        player: %Tableau{
+          fencea1: true,
+          rowa2number: 1,
+          rowa3number: 2,
+          rowa4number: 3,
+          rowa5number: 4,
+          rowa6number: 5,
+          rowa7number: 6,
+          fencea7: true,
+          rowb1number: 1,
+          rowb2number: 2,
+          rowb3number: 3,
+          rowb4number: 4,
+          fenceb4: true,
+          rowb5number: 5,
+          rowb6number: 6,
+          rowb7number: 7,
+          rowb8number: 8,
+          fenceb8: true,
+          rowc1number: 1,
+          rowc2number: 2,
+          rowc3number: 3,
+          fencec3: true,
+          rowc4number: 4,
+          rowc5number: 5,
+          rowc6number: 6,
+          fencec6: true,
+          built_estates1: 0,
+          built_estates2: 0,
+          built_estates3: 2,
+          built_estates4: 1,
+          built_estates5: 0,
+          built_estates6: 1
+        }
+      }
+
+      dst = EstatePlanner.with_plan(src, src.plan1, false, 1)
+
+      assert dst.plan1_used == true
+    end
+
+    test "gives points to player" do
+      src = %State{
+        plan1: %Plan{needs: %{3 => 2}, points1: 10, points2: 5},
+        plan2: %Plan{needs: %{4 => 1}, points1: 9, points2: 4},
+        plan3: %Plan{needs: %{6 => 1}, points1: 8, points2: 3},
+        player: %Tableau{
+          fencea1: true,
+          rowa2number: 1,
+          rowa3number: 2,
+          rowa4number: 3,
+          rowa5number: 4,
+          rowa6number: 5,
+          rowa7number: 6,
+          fencea7: true,
+          rowb1number: 1,
+          rowb2number: 2,
+          rowb3number: 3,
+          rowb4number: 4,
+          fenceb4: true,
+          rowb5number: 5,
+          rowb6number: 6,
+          rowb7number: 7,
+          rowb8number: 8,
+          fenceb8: true,
+          rowc1number: 1,
+          rowc2number: 2,
+          rowc3number: 3,
+          fencec3: true,
+          rowc4number: 4,
+          rowc5number: 5,
+          rowc6number: 6,
+          fencec6: true,
+          built_estates1: 0,
+          built_estates2: 0,
+          built_estates3: 2,
+          built_estates4: 1,
+          built_estates5: 0,
+          built_estates6: 1
+        }
+      }
+
+      dst = EstatePlanner.with_plan(src, src.plan1, false, 1)
+
+      assert dst.player.plan1 == 10
     end
   end
 end
