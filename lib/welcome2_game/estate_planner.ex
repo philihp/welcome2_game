@@ -51,6 +51,10 @@ defmodule Welcome2Game.EstatePlanner do
     })
   end
 
+  def subtract_plan(state, %Plan{needs: _needs}) do
+    state
+  end
+
   def plan_needs(%Plan{needs: needs}) do
     for {size, amount} <- needs do
       for _ <- 1..amount do

@@ -14,6 +14,7 @@ defmodule Welcome2Game.Game do
           Poison.decode!(json, as: [%Welcome2Game.Plan{}])
           |> Enum.shuffle()
           |> hd
+          |> Plan.clean_needs()
         end
       )
 
