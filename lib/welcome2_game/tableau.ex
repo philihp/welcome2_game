@@ -163,4 +163,17 @@ defmodule Welcome2Game.Tableau do
     built_estates5: 0,
     built_estates6: 0
   )
+
+  def all_slots_used?(player) do
+    Enum.all?(
+      for i <- 1..10 do
+        Map.get(player, :"rowa#{i}number") !== nil &&
+          Map.get(player, :"rowb#{i}number") !== nil &&
+          Map.get(player, :"rowc#{i}number") !== nil
+      end
+    ) &&
+      Map.get(player, :rowb11number) !== nil &&
+      Map.get(player, :rowc11number) !== nil &&
+      Map.get(player, :rowc12number) !== nil
+  end
 end

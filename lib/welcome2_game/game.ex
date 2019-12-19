@@ -46,7 +46,8 @@ defmodule Welcome2Game.Game do
       shown3: shown3
     } =
       cond do
-        length(state.deck1) <= 1 -> shuffle(state)
+        # commented out, because end of game should usually occur if the decks are empty
+        # length(state.deck1) <= 1 -> shuffle(state)
         true -> state
       end
 
@@ -207,7 +208,37 @@ defmodule Welcome2Game.Game do
     }
     |> EstateMaker.update()
     |> EstatePlanner.update()
+    |> check_end_game()
     |> draw
+  end
+
+  def check_end_game(state) do
+    (end_game?(state) && end_game(state)) || state
+  end
+
+  def end_game?(state) do
+    # solo version ends when all decks exhausted
+    state.player.refusals >= 3 &&
+      state.player.plan1 != 0 &&
+      state.player.plan2 != 0 &&
+      state.player.plan3 != 0 &&
+      Tableau.all_slots_used?(state.player) &&
+      has_at_least_two?(state.deck1) &&
+      has_at_least_two?(state.deck2) &&
+      has_at_least_two?(state.deck3)
+  end
+
+  def has_at_least_two?([_, _ | _]) do
+    true
+  end
+
+  def has_at_least_two?(_) do
+    false
+  end
+
+  def end_game(state) do
+    # TODO: calculate score and put it somewhere
+    %State{state | winner: true}
   end
 
   def rollback(state) do
@@ -235,7 +266,6 @@ defmodule Welcome2Game.Game do
       state: state.state,
       permit: state.permit,
       built: state.built,
-      effect: state.effect,
       moves: MoveFinder.moves(state)
     }
   end
