@@ -163,27 +163,4 @@ defmodule Welcome2Game.Tableau do
     built_estates5: 0,
     built_estates6: 0
   )
-
-  def all_refusals_used?(%Welcome2Game.Tableau{refusals: refusals}) do
-    refusals >= 3
-  end
-
-  def all_plans_used?(%Welcome2Game.Tableau{plan1: plan1, plan2: plan2, plan3: plan3}) do
-    plan1 != 0 &&
-      plan2 != 0 &&
-      plan3 != 0
-  end
-
-  def all_slots_used?(player = %Welcome2Game.Tableau{}) do
-    Enum.all?(
-      for i <- 1..10 do
-        Map.get(player, :"rowa#{i}number") !== nil &&
-          Map.get(player, :"rowb#{i}number") !== nil &&
-          Map.get(player, :"rowc#{i}number") !== nil
-      end
-    ) &&
-      Map.get(player, :rowb11number) !== nil &&
-      Map.get(player, :rowc11number) !== nil &&
-      Map.get(player, :rowc12number) !== nil
-  end
 end

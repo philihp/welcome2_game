@@ -1,5 +1,14 @@
 defmodule Welcome2Game.Game do
-  alias Welcome2Game.{Card, Plan, State, Tableau, MoveFinder, EstateMaker, EstatePlanner}
+  alias Welcome2Game.{
+    Card,
+    Plan,
+    State,
+    Tableau,
+    MoveFinder,
+    EstateMaker,
+    EstatePlanner,
+    GameEnder
+  }
 
   def new_game do
     deck =
@@ -208,37 +217,8 @@ defmodule Welcome2Game.Game do
     }
     |> EstateMaker.update()
     |> EstatePlanner.update()
-    |> check_end_game()
+    |> GameEnder.update()
     |> draw
-  end
-
-  def check_end_game(state) do
-    (end_game?(state) && end_game(state)) || state
-  end
-
-  def end_game?(state) do
-    # solo version ends when all decks exhausted
-    Enum.any?([
-      Tableau.all_refusals_used?(state.player),
-      Tableau.all_plans_used?(state.player),
-      Tableau.all_slots_used?(state.player),
-      deck_too_small(state.deck1),
-      deck_too_small(state.deck2),
-      deck_too_small(state.deck3)
-    ])
-  end
-
-  def deck_too_small([_, _ | _]) do
-    false
-  end
-
-  def deck_too_small(_) do
-    true
-  end
-
-  def end_game(state) do
-    # TODO: calculate score and put it somewhere
-    %State{state | winner: true}
   end
 
   def rollback(state) do
