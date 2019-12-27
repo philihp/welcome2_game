@@ -1,6 +1,6 @@
 defmodule Welcome2Game.EstatePlannerTest do
   alias Welcome2Game.{EstatePlanner, State, Plan, Tableau}
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "#update" do
     test "basically it does it" do

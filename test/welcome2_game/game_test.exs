@@ -1,6 +1,6 @@
 defmodule Welcome2Game.GameTest do
   alias Welcome2Game.Game
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "new_game returns a game" do
     game = Game.new_game()

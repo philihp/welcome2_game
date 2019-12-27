@@ -1,6 +1,6 @@
 defmodule Welcome2Game.EstateMakerTest do
   alias Welcome2Game.{EstateMaker, Tableau}
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "#update" do
     test "merges all rows" do

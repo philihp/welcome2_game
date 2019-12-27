@@ -218,22 +218,22 @@ defmodule Welcome2Game.Game do
 
   def end_game?(state) do
     # solo version ends when all decks exhausted
-    state.player.refusals >= 3 &&
-      state.player.plan1 != 0 &&
-      state.player.plan2 != 0 &&
-      state.player.plan3 != 0 &&
-      Tableau.all_slots_used?(state.player) &&
-      has_at_least_two?(state.deck1) &&
-      has_at_least_two?(state.deck2) &&
-      has_at_least_two?(state.deck3)
+    Enum.any?([
+      Tableau.all_refusals_used?(state.player),
+      Tableau.all_plans_used?(state.player),
+      Tableau.all_slots_used?(state.player),
+      deck_too_small(state.deck1),
+      deck_too_small(state.deck2),
+      deck_too_small(state.deck3)
+    ])
   end
 
-  def has_at_least_two?([_, _ | _]) do
-    true
-  end
-
-  def has_at_least_two?(_) do
+  def deck_too_small([_, _ | _]) do
     false
+  end
+
+  def deck_too_small(_) do
+    true
   end
 
   def end_game(state) do
@@ -247,6 +247,7 @@ defmodule Welcome2Game.Game do
 
   def view(state) do
     %{
+      winner: state.winner,
       player: state.player |> Map.from_struct(),
       plan1: state.plan1,
       plan2: state.plan2,

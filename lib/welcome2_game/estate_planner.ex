@@ -1,5 +1,5 @@
 defmodule Welcome2Game.EstatePlanner do
-  alias Welcome2Game.{State, Plan, Tableau, EstateMaker}
+  alias Welcome2Game.{State, Plan}
 
   @houses_per_row %{
     a: 10,
