@@ -1,5 +1,7 @@
 defmodule Welcome2Game.State do
-  alias Welcome2Game.Tableau
+  @behaviour Gex.StateObservation
+
+  alias Welcome2Game.{State, Tableau}
 
   defstruct(
     state: :setup,
@@ -25,4 +27,38 @@ defmodule Welcome2Game.State do
     effect: nil,
     player: %Tableau{}
   )
+
+  def reward(_state = %State{}) do
+    # TODO
+    0.0
+  end
+
+  def value(_state = %State{}) do
+    # TODO
+    0.0
+  end
+
+  def terminal?(%State{winner: winner}) do
+    winner != nil
+  end
+
+  def winner(%State{winner: winner}) do
+    winner
+  end
+
+  def active_player(%State{}) do
+    0
+  end
+
+  def advance(src_state, _move) do
+    src_state
+  end
+
+  def actions(%State{moves: actions}) do
+    actions
+  end
+
+  def feature_vector(%State{}) do
+    [0.0, 0.0, 0.0]
+  end
 end

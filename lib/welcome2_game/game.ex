@@ -10,6 +10,16 @@ defmodule Welcome2Game.Game do
     GameEnder
   }
 
+  @behaviour Gex.GameBoard
+
+  def default_state() do
+    Welcome2Game.Game.new_game()
+  end
+
+  def random_state() do
+    Welcome2Game.Game.new_game()
+  end
+
   def new_game do
     deck =
       Welcome2Constants.deck()
