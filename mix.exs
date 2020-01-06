@@ -27,7 +27,8 @@ defmodule Welcome2Game.MixProject do
     [
       {:poison, "~> 3.1"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
-      {:welcome2_constants, path: '../welcome2_constants', in_umbrella: true}
+      {:welcome2_constants, path: '../welcome2_constants'},
+      {:gex, path: '../gex'}
     ]
   end
 end
