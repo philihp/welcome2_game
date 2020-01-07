@@ -7,7 +7,7 @@ defmodule Welcome2Game.GameEnder do
 
   def end_game(state) do
     # TODO: calculate score and put it somewhere
-    %State{state | winner: true}
+    %State{state | winner: 0}
   end
 
   def end_game?(state) do
