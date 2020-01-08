@@ -11,18 +11,20 @@ defmodule Welcome2Game.EstateMaker do
     Map.merge(a, b, fn _k, va, vb -> va + vb end)
   end
 
-  def update(state = %State{}) do
+  def update(state, options \\ [])
+
+  def update(state = %State{}, options) do
     %State{
       state
-      | player: update(state.player)
+      | player: update(state.player, options)
     }
   end
 
-  def update(player = %Tableau{}) do
+  def update(player = %Tableau{}, options) do
     estates =
-      estates_from_player(player, :a)
-      <|> estates_from_player(player, :b)
-      <|> estates_from_player(player, :c)
+      estates_from_player(player, :a, options)
+      <|> estates_from_player(player, :b, options)
+      <|> estates_from_player(player, :c, options)
 
     %Tableau{
       player
@@ -35,8 +37,10 @@ defmodule Welcome2Game.EstateMaker do
     }
   end
 
-  def estates_from_player(player = %Tableau{}, which) do
-    houses = player |> houses_from_player(which, @houses_per_row[which]) |> Enum.reverse()
+  def estates_from_player(player = %Tableau{}, which, options \\ []) do
+    houses =
+      player |> houses_from_player(which, @houses_per_row[which], options) |> Enum.reverse()
+
     fences = player |> fences_from_player(which, @houses_per_row[which]) |> Enum.reverse()
 
     estates_from_row(houses, fences)
@@ -86,15 +90,19 @@ defmodule Welcome2Game.EstateMaker do
     [0 * following | trailing]
   end
 
-  def houses_from_player(_player, _which, 0) do
+  def houses_from_player(player, which, curr, options \\ [])
+
+  def houses_from_player(_player, _which, 0, _options) do
     []
   end
 
-  def houses_from_player(player, which, curr) when curr >= 1 do
+  def houses_from_player(player, which, curr, options) when curr >= 1 do
+    exclude_used = Keyword.get(options, :exclude_used, true)
+
     [
       Map.get(player, :"row#{which}#{curr}number", :invalid) !== nil &&
-        Map.get(player, :"row#{which}#{curr}plan", :invalid) === false
-      | houses_from_player(player, which, curr - 1)
+        exclude_used && Map.get(player, :"row#{which}#{curr}plan", :invalid) === false
+      | houses_from_player(player, which, curr - 1, options)
     ]
   end
 

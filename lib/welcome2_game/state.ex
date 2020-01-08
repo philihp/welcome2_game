@@ -1,7 +1,7 @@
 defmodule Welcome2Game.State do
   @behaviour Gex.StateObservation
 
-  alias Welcome2Game.{State, Tableau}
+  alias Welcome2Game.{Game, State, Tableau, MoveFinder, GameScorer}
 
   defstruct(
     state: :setup,
@@ -33,9 +33,8 @@ defmodule Welcome2Game.State do
     0.0
   end
 
-  def value(_state = %State{}) do
-    # TODO
-    0.0
+  def value(state = %State{}) do
+    GameScorer.score(state)
   end
 
   def terminal?(%State{winner: winner}) do
@@ -50,12 +49,64 @@ defmodule Welcome2Game.State do
     0
   end
 
-  def advance(src_state, _move) do
-    src_state
+  def advance(src_state, :draw) do
+    Game.draw(src_state)
   end
 
-  def actions(%State{moves: actions}) do
-    actions
+  def advance(src_state, :shuffle) do
+    Game.shuffle(src_state)
+  end
+
+  def advance(src_state, {:permit, index}) do
+    Game.permit(src_state, index)
+  end
+
+  def advance(src_state, {:build, row, index}) do
+    Game.build(src_state, row, index)
+  end
+
+  def advance(src_state, :pool) do
+    Game.pool(src_state)
+  end
+
+  def advance(src_state, {:agent, size}) do
+    Game.agent(src_state, size)
+  end
+
+  def advance(src_state, :park) do
+    Game.park(src_state)
+  end
+
+  def advance(src_state, {:fence, row, index}) do
+    Game.fence(src_state, row, index)
+  end
+
+  def advance(src_state, {:bis, row, index, offset}) do
+    Game.bis(src_state, row, index, offset)
+  end
+
+  def advance(src_state, {:temp, row, index, offset}) do
+    Game.temp(src_state, row, index, offset)
+  end
+
+  def advance(src_state, :commit) do
+    Game.commit(src_state)
+  end
+
+  def advance(src_state, :refuse) do
+    Game.refuse(src_state)
+  end
+
+  def advance(src_state, :rollback) do
+    Game.rollback(src_state)
+  end
+
+  def advance(src_state, true) do
+    Game.view(src_state)
+  end
+
+  def actions(state = %State{}) do
+    MoveFinder.moves(state)
   end
 
   def feature_vector(%State{}) do
