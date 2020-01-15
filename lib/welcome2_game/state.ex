@@ -1,5 +1,5 @@
 defmodule Welcome2Game.State do
-  @behaviour Gex.StateObservation
+  use Gex.State
 
   alias Welcome2Game.{Game, State, Tableau, MoveFinder, GameScorer}
 
@@ -28,12 +28,7 @@ defmodule Welcome2Game.State do
     player: %Tableau{}
   )
 
-  def reward(_state = %State{}) do
-    # TODO
-    0.0
-  end
-
-  def value(state = %State{}) do
+  def score(state = %State{}) do
     GameScorer.score(state)
   end
 

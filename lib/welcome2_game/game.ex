@@ -10,7 +10,7 @@ defmodule Welcome2Game.Game do
     GameEnder
   }
 
-  @behaviour Gex.GameBoard
+  use Gex.Game
 
   def default_state() do
     Welcome2Game.Game.new_game()
