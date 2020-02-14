@@ -96,7 +96,7 @@ defmodule Welcome2Game.State do
     Game.rollback(src_state)
   end
 
-  def advance(src_state, true) do
+  def view(src_state) do
     Game.view(src_state)
   end
 
